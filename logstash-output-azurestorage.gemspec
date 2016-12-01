@@ -2,9 +2,9 @@ Gem::Specification.new do |s|
   s.name          = 'logstash-output-azurestorage'
   s.version       = '0.1.0'
   s.licenses      = ['Apache License (2.0)']
-  s.summary       = ''
-  s.description   = ''
-  s.homepage      = ''
+  s.summary       = "This plugin was created for store the logstash's events into Azure storage"
+  s.description   = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gemname. This gem is not a stand-alone program"
+  s.homepage      = 'https://github.com/lewisjackson/logstash-output-azure-storage'
   s.authors       = ['Lewis Jackson']
   s.email         = 'lewis.jackson@asos.com'
   s.require_paths = ['lib']
