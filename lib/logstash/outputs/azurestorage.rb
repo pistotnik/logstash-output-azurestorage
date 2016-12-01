@@ -12,14 +12,27 @@ class LogStash::Outputs::Azurestorage < LogStash::Outputs::Base
 
   public
   def register
-    client = Azure::Storage::Client.create(:storage_account_name => @storage_account_name, :storage_access_key => @storage_access_key)
-    client.ca_file = File.join(File.dirname(__FILE__), "../../../assets/cacert.pem")
-    tables = client.table_client
-    tables.create_table(@table_name)
+    setup_azure_storage_connection()
+    create_table_if_not_exists(@table_name)
   end
 
   public
   def receive(event)
     puts event
+  end
+
+  private
+  def create_table_if_not_exists(table_name)
+    tables = Azure::Storage::Table::TableService.new
+    begin
+      tables.create_table(@table_name)
+    rescue
+
+    end
+  end
+
+  def setup_azure_storage_connection()
+    Azure::Storage.setup(:storage_account_name => @storage_account_name, :storage_access_key => @storage_access_key)
+    Azure::Storage.client.ca_file = File.join(File.dirname(__FILE__), "../../../assets/cacert.pem")
   end
 end
