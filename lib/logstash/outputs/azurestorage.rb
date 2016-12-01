@@ -18,7 +18,24 @@ class LogStash::Outputs::Azurestorage < LogStash::Outputs::Base
 
   public
   def receive(event)
-    puts event
+    entity = { PartitionKey: Date.today.strftime("%m%d%Y"),
+               RowKey: DateTime.now.strftime('%Q'),
+               message: event.sprintf("%{message}"),
+               host: event.sprintf("%{host}"),
+               Logfile: event.sprintf("%{Logfile}"),
+               message: event.sprintf("%{message}"),
+               Category: event.sprintf("%{Category}"),
+               ComputerName: event.sprintf("%{ComputerName}"),
+               EventIdentifier: event.sprintf("%{EventIdentifier}"),
+               EventType: event.sprintf("%{EventType}"),
+               RecordNumber: event.sprintf("%{RecordNumber}"),
+               SourceName: event.sprintf("%{SourceName}"),
+               TimeGenerated: event.sprintf("%{TimeGenerated}"),
+               TimeWritten: event.sprintf("%{TimeWritten}"),
+               Type: event.sprintf("%{Type}"),
+               InsertionStrings: event.sprintf("%{InsertionStrings}") }
+    tables = Azure::Storage::Table::TableService.new
+    tables.insert_entity(@table_name, entity)
   end
 
   private
