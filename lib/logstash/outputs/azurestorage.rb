@@ -10,7 +10,6 @@ class LogStash::Outputs::Azurestorage < LogStash::Outputs::Base
   config :storage_access_key, :validate => :string
   config :table_name, :validate => :string
 
-  public
   def register
     setup_azure_storage_connection()
     create_table_if_not_exists(@table_name)
@@ -33,23 +32,26 @@ class LogStash::Outputs::Azurestorage < LogStash::Outputs::Base
                RoleInstance: "",
                DeploymentId: "",
                EventTickCount: ""
-             }
+    }
     tables = Azure::Storage::Table::TableService.new
     tables.insert_entity(@table_name, entity)
+    event
   end
 
   private
   def create_table_if_not_exists(table_name)
     tables = Azure::Storage::Table::TableService.new
     begin
-      tables.create_table(@table_name)
+      tables.create_table(table_name)
     rescue
 
     end
   end
 
-  def setup_azure_storage_connection()
+  def setup_azure_storage_connection
     Azure::Storage.setup(:storage_account_name => @storage_account_name, :storage_access_key => @storage_access_key)
     Azure::Storage.client.ca_file = File.join(File.dirname(__FILE__), "../../../assets/cacert.pem")
   end
+
 end
+
