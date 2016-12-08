@@ -18,22 +18,24 @@ class LogStash::Outputs::Azurestorage < LogStash::Outputs::Base
 
   public
   def receive(event)
-    entity = { PartitionKey: Date.today.strftime("%m%d%Y"),
-               RowKey: DateTime.now.strftime('%Q'),
-               EventId: event.sprintf("%{event_id}"),
-               Level: event.sprintf("%{level}"),
-               Pid: event.sprintf("%{process_id}"),
-               Tid: event.sprintf("%{thread_id}"),
-               ProviderGuid: event.sprintf("%{provider_guid}"),
-               ProviderName: event.sprintf("%{source_name}"),
-               Channel: event.sprintf("%{log_name}"),
-               RawXml: event.sprintf("%{xml}"),
-               Description: event.sprintf("%{message}"),
-               Role: "",
-               RoleInstance: "",
-               DeploymentId: "",
-               EventTickCount: ""
+    entity = {
+        PartitionKey: DateTime.now.strftime("%m%d%Y"),
+        RowKey: DateTime.now.strftime('%Q'),
+        EventId: event.sprintf("%{event_id}"),
+        Level: event.sprintf("%{level}"),
+        Pid: event.sprintf("%{process_id}"),
+        Tid: event.sprintf("%{thread_id}"),
+        ProviderGuid: event.sprintf("%{provider_guid}"),
+        ProviderName: event.sprintf("%{source_name}"),
+        Channel: event.sprintf("%{log_name}"),
+        RawXml: event.sprintf("%{xml}"),
+        Description: event.sprintf("%{message}"),
+        Role: "",
+        RoleInstance: "",
+        DeploymentId: "",
+        EventTickCount: ""
     }
+
     @azure_service.insert_entity(entity)
     event
   end
