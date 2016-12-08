@@ -1,7 +1,7 @@
 # encoding: utf-8
-require "logstash/outputs/base"
-require "logstash/namespace"
-require "azure/storage"
+require 'logstash/outputs/base'
+require 'logstash/namespace'
+require 'azure/storage'
 
 class LogStash::Outputs::Azurestorage < LogStash::Outputs::Base
   config_name "azurestorage"
@@ -10,9 +10,10 @@ class LogStash::Outputs::Azurestorage < LogStash::Outputs::Base
   config :storage_access_key, :validate => :string
   config :table_name, :validate => :string
 
+  public
   def register
-    setup_azure_storage_connection()
-    create_table_if_not_exists(@table_name)
+    @azure_service = LogStash::Outputs::AzureStorageClient.new(@table_name)
+    @azure_service.init()
   end
 
   public
@@ -33,25 +34,7 @@ class LogStash::Outputs::Azurestorage < LogStash::Outputs::Base
                DeploymentId: "",
                EventTickCount: ""
     }
-    tables = Azure::Storage::Table::TableService.new
-    tables.insert_entity(@table_name, entity)
+    @azure_service.insert_entity(entity)
     event
   end
-
-  private
-  def create_table_if_not_exists(table_name)
-    tables = Azure::Storage::Table::TableService.new
-    begin
-      tables.create_table(table_name)
-    rescue
-
-    end
-  end
-
-  def setup_azure_storage_connection
-    Azure::Storage.setup(:storage_account_name => @storage_account_name, :storage_access_key => @storage_access_key)
-    Azure::Storage.client.ca_file = File.join(File.dirname(__FILE__), "../../../assets/cacert.pem")
-  end
-
 end
-
